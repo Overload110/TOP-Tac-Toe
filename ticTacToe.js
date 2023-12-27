@@ -13,6 +13,7 @@ const gameBoard = (function(){
     }
 
     const checkWin = () =>{
+        let product = 1;
         if(board[0][0].getMark() + board[1][1].getMark() + board[2][2].getMark() === 3 ||
             board[0][0].getMark() + board[1][1].getMark() + board[2][2].getMark() === 6){
                 win();
@@ -27,11 +28,15 @@ const gameBoard = (function(){
                 win();
             }
             for(let j = 0; j < 3; j++){
+                product *= board[i][j];
                 if(board[0][j].getMark() + board[1][j].getMark() + board[2][j].getMark() === 3 ||
                 board[0][j].getMark() + board[1][j].getMark() + board[2][j].getMark() === 6){
                     win();
                 } 
             }
+        }
+        if(product !== 0){
+            gameTie();
         }
     }
 
@@ -42,7 +47,11 @@ function createPlayer(name, xo){
     const player = name;
     const mark = xo;
 
-    return {player, mark};
+    const getName = () => player;
+
+    const getMark = () => mark;
+
+    return {getName, getMark};
 }
 
 
@@ -50,8 +59,9 @@ function createTile(){
     content = 0;
 
     const placeMark = (player) =>{
-        if(content = 0){
+        if(content === 0){
             content = player.mark;
+            game.turnChange();
         }
     }
 
@@ -60,3 +70,26 @@ function createTile(){
     return {placeMark, getMark}
 }
 
+const game = (function(){
+    let turn = 1;
+
+    const win = () =>{
+        if(turn = 1){
+            //x wins
+        }else{
+            //o wins
+        }
+    }
+
+    const turnChange = () =>{
+        if(turn === 1){
+            turn = 2;
+        }else{
+            turn = 1;
+        }
+    }
+
+    const whoTurn = () =>{
+
+    }
+});
