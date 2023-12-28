@@ -1,46 +1,75 @@
-const gameBoard = (function(){
-    const board = newBoard();
+const boardDiv = document.getElementById("board");
+let turn;
+let pcPlayer;
+let npcPlayer;
 
-    const newBoard = () => {
-        let board = [];
-        for(let i = 0; i < 3; i++){
-            board[i] = [];
-            for(let j = 0; j < 3; j++){
-                board[i].push(createTile());
+const gameBoard = (() =>{
+    const board = new Array(9).fill(null);
+    let isNull = value => value = null;
+
+    const newBoard = () => board.fill(null);
+
+    const checkWin = (player) =>{
+        const lines = [
+        [0, 1, 2],
+        [3, 4, 5], 
+        [6, 7, 8], 
+        [0, 3, 6], 
+        [1, 4, 7], 
+        [2, 5, 8], 
+        [0, 4, 8], 
+        [2, 4, 6] 
+        ];
+
+        for (let line of lines) {
+            if (board[line[0]] &&
+                board[line[0]] === board[line[1]] &&
+                board[line[0]] === board[line[2]]) {
+                winner(player);
+                return 'Win';
             }
-        };
-        return board;
+            if(!board.filter(isNull)){
+                gameTie();
+                return 'Tie';
+            }
+        }
+        return false;
     }
 
-    const checkWin = () =>{
-        let product = 1;
-        if(board[0][0].getMark() + board[1][1].getMark() + board[2][2].getMark() === 3 ||
-            board[0][0].getMark() + board[1][1].getMark() + board[2][2].getMark() === 6){
-                win();
-        }
-        if(board[0][2].getMark() + board[1][1].getMark() + board[2][0].getMark() === 3 ||
-        board[0][2].getMark() + board[1][1].getMark() + board[2][0].getMark() === 6){
-            win();
-        }
-        for(let i = 0; i < 3; i++){
-            if(board[i][0].getMark() + board[i][1].getMark() + board[i][2].getMark() === 3 ||
-            board[i][0].getMark() + board[i][1].getMark() + board[i][2].getMark() === 6){
-                win();
-            }
-            for(let j = 0; j < 3; j++){
-                product *= board[i][j];
-                if(board[0][j].getMark() + board[1][j].getMark() + board[2][j].getMark() === 3 ||
-                board[0][j].getMark() + board[1][j].getMark() + board[2][j].getMark() === 6){
-                    win();
-                } 
-            }
-        }
-        if(product !== 0){
-            gameTie();
-        }
+    const getTile = (tile) =>{
+        return board[tile];
     }
 
-    return {checkWin, newBoard};
+    const placeMark = (e) =>{
+        if(turn === pcPlayer){
+            if(e.target.id === null){
+                e.target = pcPlayer.getMark();
+                showBoard();
+                checkWin(pcPlayer);
+                swapTurn();
+            }
+        }
+        if(turn === npcPlayer){
+            board[choice] = npcPlayer.getMark();
+            showBoard();
+            checkWin(npcPlayer);
+            swapTurn();
+    }
+    }
+
+    const showBoard = () =>{
+        boardDiv.innerHTML = '';
+        for(i in board){
+            let tile = document.createElement('button');
+            tile.className = 'tile';
+            tile.setAttribute('id', i);
+            tile.innerHTML = board[i];
+            tile.addEventListener('click', placeMark)
+            boardDiv.appendChild(tile);
+        }
+    };
+
+    return {newBoard, placeMark, showBoard, getTile, checkWin};
 })();
 
 function createPlayer(name, xo){
@@ -54,42 +83,50 @@ function createPlayer(name, xo){
     return {getName, getMark};
 }
 
-
-function createTile(){
-    content = 0;
-
-    const placeMark = (player) =>{
-        if(content === 0){
-            content = player.mark;
-            game.turnChange();
-        }
-    }
-
-    const getMark = () => content;
-    
-    return {placeMark, getMark}
+function winner(player){
+  alert(`${player.getName()} wins!!`)
 }
 
-const game = (function(){
-    let turn = 1;
+function setUpGame() {
+  if (document.getElementById('X').checked) {
+    pcPlayer = createPlayer("Player 1", "X");
+    npcPlayer = createPlayer("Player 2", "O");
+    turn = pcPlayer;
+  } else if (document.getElementById('O').checked) {
+      pcPlayer = createPlayer("Player 2", "O");
+      npcPlayer = createPlayer("Player 1", "X");
+      turn = npcPlayer;
+  }
+  gameBoard.newBoard();
+  gameBoard.showBoard();
+}
 
-    const win = () =>{
-        if(turn = 1){
-            //x wins
-        }else{
-            //o wins
+function playGame() {
+  while (gameBoard.checkWin() !== 'Win' || gameBoard.checkWin() !== 'Tie') {
+      if (turn === pcPlayer) {
+          gameBoard.placeMark(e.target.id);
+          turn = npcPlayer;
+      } else if (turn === npcPlayer) {
+          cpuTurn();
+      }
+      gameBoard.showBoard();
+  }
+}
+
+function cpuTurn(){
+    let choices = [4, 0, 2, 6, 8, 1, 3, 5, 7];
+    for(i in choices){
+        if(gameBoard.getTile(choices[i]) === null){
+            gameBoard.placeMark(choices[i]);
+            swapTurn();
+            break;
         }
     }
+}
 
-    const turnChange = () =>{
-        if(turn === 1){
-            turn = 2;
-        }else{
-            turn = 1;
-        }
-    }
+function gameTie(){
+    alert("Game Tied.");
+    setUpGame();
+}
 
-    const whoTurn = () =>{
-
-    }
-});
+setUpGame();
