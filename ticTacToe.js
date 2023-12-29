@@ -1,15 +1,14 @@
 const boardDiv = document.getElementById("board");
 let turn;
-let pcPlayer;
-let npcPlayer;
+const message = document.getElementById("message");
+let pcPlayer, npcPlayer;
 
 const gameBoard = (() =>{
     const board = new Array(9).fill(null);
-    let isNull = value => value = null;
 
     const newBoard = () => board.fill(null);
 
-    const checkWin = (player) =>{
+    const checkWin = () =>{
         const lines = [
         [0, 1, 2],
         [3, 4, 5], 
@@ -25,12 +24,12 @@ const gameBoard = (() =>{
             if (board[line[0]] &&
                 board[line[0]] === board[line[1]] &&
                 board[line[0]] === board[line[2]]) {
-                winner(player);
-                return 'Win';
+                winner(turn);
+                return true;
             }
-            if(!board.filter(isNull)){
+            if(board.every(val => val !== null)){
                 gameTie();
-                return 'Tie';
+                return true;
             }
         }
         return false;
@@ -42,29 +41,32 @@ const gameBoard = (() =>{
 
     const placeMark = (e) =>{
         if(turn === pcPlayer){
-            if(e.target.id === null){
-                e.target = pcPlayer.getMark();
-                showBoard();
-                checkWin(pcPlayer);
-                swapTurn();
+            if(board[e.target.id] === null){
+                board[e.target.id] = pcPlayer.getMark();
+                showBoard(true);
+                if(!checkWin()){
+                    turn = npcPlayer;
+                }
+                
             }
         }
         if(turn === npcPlayer){
-            board[choice] = npcPlayer.getMark();
-            showBoard();
-            checkWin(npcPlayer);
-            swapTurn();
+            board[cpuTurn()] = npcPlayer.getMark();
+            showBoard(true);
+            if(!checkWin()){
+                turn = pcPlayer;
+            }
     }
     }
 
-    const showBoard = () =>{
+    const showBoard = (interactible) =>{
         boardDiv.innerHTML = '';
         for(i in board){
             let tile = document.createElement('button');
             tile.className = 'tile';
             tile.setAttribute('id', i);
             tile.innerHTML = board[i];
-            tile.addEventListener('click', placeMark)
+            if(interactible) tile.addEventListener('click', placeMark);
             boardDiv.appendChild(tile);
         }
     };
@@ -84,49 +86,58 @@ function createPlayer(name, xo){
 }
 
 function winner(player){
-  alert(`${player.getName()} wins!!`)
+  message.innerHTML = `${player.getName()} wins!!`
+  gameBoard.showBoard(false);
+  if(pcPlayer.getMark() === 'X'){
+    turn = pcPlayer;
+  }else{
+    turn = npcPlayer;
+  }
 }
 
 function setUpGame() {
-  if (document.getElementById('X').checked) {
-    pcPlayer = createPlayer("Player 1", "X");
-    npcPlayer = createPlayer("Player 2", "O");
-    turn = pcPlayer;
-  } else if (document.getElementById('O').checked) {
-      pcPlayer = createPlayer("Player 2", "O");
-      npcPlayer = createPlayer("Player 1", "X");
+    message.innerHTML = '';
+    gameBoard.newBoard();
+    gameBoard.showBoard(true);
+    if(npcPlayer.getMark() === 'X'){
       turn = npcPlayer;
-  }
-  gameBoard.newBoard();
-  gameBoard.showBoard();
-}
-
-function playGame() {
-  while (gameBoard.checkWin() !== 'Win' || gameBoard.checkWin() !== 'Tie') {
-      if (turn === pcPlayer) {
-          gameBoard.placeMark(e.target.id);
-          turn = npcPlayer;
-      } else if (turn === npcPlayer) {
-          cpuTurn();
-      }
-      gameBoard.showBoard();
-  }
+      gameBoard.placeMark();
+    }
+    
 }
 
 function cpuTurn(){
-    let choices = [4, 0, 2, 6, 8, 1, 3, 5, 7];
-    for(i in choices){
-        if(gameBoard.getTile(choices[i]) === null){
-            gameBoard.placeMark(choices[i]);
-            swapTurn();
-            break;
-        }
-    }
+  let emptyCells = [];
+  for (let i = 0; i < 9; i++) {
+      if (!gameBoard.getTile(i)) {
+          emptyCells.push(i);
+      }
+  }
+  const randomCell = Math.floor(Math.random() * emptyCells.length);
+  console.log(randomCell);
+  return emptyCells[randomCell];
 }
 
 function gameTie(){
-    alert("Game Tied.");
-    setUpGame();
+    message.innerHTML = "Game Tied.";
+    gameBoard.showBoard(false);
+    if(pcPlayer.getMark() === 'X'){
+        turn = pcPlayer;
+      }else{
+        turn = npcPlayer;
+      }
 }
 
-setUpGame();
+function selectMark(mark){
+    if(mark === 'X'){
+        pcPlayer = createPlayer("Player 1", "X");
+        npcPlayer = createPlayer("Player 2", "O");
+        turn = pcPlayer;
+        setUpGame();
+      } else if(mark === 'O'){
+        pcPlayer = createPlayer("Player 2", "O");
+        npcPlayer = createPlayer("Player 1", "X");
+        turn = npcPlayer;
+        setUpGame();
+      }
+}
