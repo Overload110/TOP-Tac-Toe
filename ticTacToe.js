@@ -25,6 +25,7 @@ const gameBoard = (() =>{
                 board[line[0]] === board[line[1]] &&
                 board[line[0]] === board[line[2]]) {
                 winner(turn);
+                turn = null;
                 return true;
             }
             if(board.every(val => val !== null)){
@@ -132,12 +133,26 @@ function selectMark(mark){
     if(mark === 'X'){
         pcPlayer = createPlayer("Player 1", "X");
         npcPlayer = createPlayer("Player 2", "O");
+        colorChange('X');
         turn = pcPlayer;
         setUpGame();
       } else if(mark === 'O'){
         pcPlayer = createPlayer("Player 2", "O");
         npcPlayer = createPlayer("Player 1", "X");
         turn = npcPlayer;
+        colorChange('O');
         setUpGame();
       }
+}
+
+function colorChange(xo){
+    const x = document.getElementById('X');
+    const o = document.getElementById('O');
+    if(xo === x.id){
+        x.classList.add('selected');
+        o.classList.remove('selected');
+    }else if(xo === o.id){
+        o.classList.add('selected');
+        x.classList.remove('selected');
+    }
 }

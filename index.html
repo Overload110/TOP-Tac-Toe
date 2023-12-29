@@ -8,6 +8,12 @@
     <script src="ticTacToe.js" defer></script>
 </head>
 <body>
-    
+    <h2 id="message"></h2>
+    <div id="choice">
+        <input type="button" id="X" value="X" onclick="selectMark('X')">
+        <input type="button" id="O" value="O" onclick="selectMark('O')">
+    </div>
+    <div id="board"></div>
+    <button id="restart" onclick="setUpGame()">Restart</button>
 </body>
 </html>

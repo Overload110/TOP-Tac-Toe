@@ -1,0 +1,51 @@
+body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    background-color: darkolivegreen;
+}
+
+h2{
+    height: 1.2em;
+}
+
+#board{
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 10px;
+}
+
+#board>button{
+    background-color: whitesmoke;
+}
+
+button, input{
+    font-size: 2em;
+    border: none;
+    border-radius: 15px;
+    background-color: olivedrab;
+}
+
+#choice{
+    background-color: whitesmoke;
+    width: 330px;
+    height: 50px;
+    border: none;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+#choice>input{
+    margin: 5px;
+}
+
+button, #choice{
+    box-shadow: 5px 5px 3px 1px black;
+}
+
+.selected{
+    background-color: lightseagreen;
+}
